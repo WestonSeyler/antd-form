@@ -8,6 +8,9 @@ export default class Filed extends Component {
   componentDidMount(){
     this.unregister=this.context.registerFiledEntities(this)
   }
+  componentWillUnmount(){
+    this.unregister()
+  }
   getControlled = () => {
     const { getFieldValue, setFieldsValue } = this.context;
     const { name } = this.props;
