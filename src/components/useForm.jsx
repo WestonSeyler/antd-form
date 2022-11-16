@@ -5,11 +5,11 @@ class FormStore {
     constructor() {
         this.store = {}; //状态值 name===>value
         this.filedEntities = [];
-        this.callbacks={}
+        this.callbacks = {};
     }
-    setCallbacks=(callbacks)=>{
-      this.callbacks={...this.callbacks,...callbacks}
-    }
+    setCallbacks = (callbacks) => {
+        this.callbacks = { ...this.callbacks, ...callbacks };
+    };
     //注册和取消注册 订阅与取消订阅
     registerFiledEntities = (entity) => {
         this.filedEntities.push(entity);
@@ -20,16 +20,31 @@ class FormStore {
             delete this.store[entity.props.name];
         };
     };
-    validate=()=>{
-      let err=[]
-      return err
-    }
+    validate = () => {
+        let err = [];
+        this.filedEntities.forEach((item) => {
+            const { name, rules } = item.props;
+            const value = this.getFieldValue(name);
+            let rule = rules[0];
+            if (
+                rule &&
+                rule.required &&
+                (value === undefined || value === "")
+            ) {
+                err.push({ [name]: rule.message, value });
+            }
+        });
+        return err;
+    };
     submit = () => {
-        let err=this.validate()
-        if(err.length===0){
-          console.log("submit ");
-        }else{
-          console.log('error')
+        let err = this.validate();
+        const { onFinish, onFinishFailed } = this.callbacks;
+        if (err.length === 0) {
+            onFinish(this.getFieldsValue());
+            console.log("submit ");
+        } else {
+            onFinishFailed(err, this.getFieldsValue());
+            console.log("error");
         }
     };
     getFieldsValue = () => {
@@ -62,8 +77,8 @@ class FormStore {
             getFieldsValue: this.getFieldsValue,
             setFieldsValue: this.setFieldsValue,
             registerFiledEntities: this.registerFiledEntities,
-            submit:this.submit,
-            setCallbacks:this.setCallbacks
+            submit: this.submit,
+            setCallbacks: this.setCallbacks
         };
     };
 }
