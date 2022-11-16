@@ -25,7 +25,13 @@ class FormStore {
     };
     //update comp
     console.log(this.store, "store");
-    this.filedEntities.forEach(i=>i.onStoreChange())
+    this.filedEntities.forEach((item)=>{
+      Object.keys(newStore).forEach(i=>{
+        if(i===item.props.name){
+          item.onStoreChange()
+        }
+      })
+    })
   };
   getForm = () => {
     return {
